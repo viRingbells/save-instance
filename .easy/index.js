@@ -19,23 +19,33 @@ function savable(target) {
     if (!target || !(target instanceof Function)) {
         throw new Error("Param for savable must be a class");
     }
-    if (target._saved_instances || target.prototype && target.prototype.saveInstance || target.getInstance || target.instance) {
+    if (target.prototype && target.prototype.saveInstance || target.getInstance || target.instance) {
         throw new Error("Can not make this class savable");
     }
-    target._saved_instances = {};
+    const saved_instances = {};
     target.prototype.saveInstance = function () {
         let name = arguments.length <= 0 || arguments[0] === undefined ? 'default' : arguments[0];
+        let options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
 
-        target._saved_instances[name] = this;
+        if (saved_instances[name]) {
+            oldOptions = saved_instances[name].options;
+            if (options.readonly) {
+                throw new Error('Can not save to rewrite read only Instance ' + name + ' !');
+            }
+        }
+        saved_instances[name] = {
+            instance: this,
+            options: options
+        };
         return this;
     };
     target.getInstance = target.instance = function () {
         let name = arguments.length <= 0 || arguments[0] === undefined ? 'default' : arguments[0];
 
-        if (!target._saved_instances[name]) {
+        if (!saved_instances[name] || !saved_instances[name].instance) {
             throw new Error('No instance named ' + name + ' found');
         }
-        return target._saved_instances[name];
+        return saved_instances[name].instance;
     };
 }
 
