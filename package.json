@@ -1,0 +1,36 @@
+{
+    "name": "save-instance",
+    "version": "0.0.1",
+    "description": "Make a class with method saveInstance and getInstance",
+    "scripts": {
+        "test": "cd .easy && rm -rf node_modules && ln -s ../node_modules node_modules && NODE_ENV=testing ./node_modules/.bin/mocha --require should test/"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/viRingbells/save-instance.git"
+    },
+    "keywords": [
+        "instance"
+    ],
+    "author": "Sun Haohao",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/viRingbells/esay-babel/issues"
+    },
+    "homepage": "https://github.com/viRingbells/esay-babel#readme",
+    "engines": {
+        "node": ">=4.0"
+    },
+    "devDependencies": {
+        "easy-babel": "^1.0.1",
+        "mocha": "^2.3.4",
+        "should": "^7.1.1"
+    },
+    "easy": {
+        "main": "index",
+        "scripts": {
+            "test": "NODE_ENV=testing ./node_modules/.bin/mocha --require should test/"
+        }
+    },
+    "main": ".easy"
+}
