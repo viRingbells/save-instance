@@ -35,6 +35,7 @@ function savable (target) {
         }
         return saved_instances[name].instance;
     }
+    return target;
 }
 
 debug("Savable: load");
