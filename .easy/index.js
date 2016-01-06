@@ -32,10 +32,10 @@ function savable(target) {
     target.getInstance = target.instance = function () {
         let name = arguments.length <= 0 || arguments[0] === undefined ? 'default' : arguments[0];
 
-        if (target._saved_instances[name]) {
-            return target._saved_instances[name];
+        if (!target._saved_instances[name]) {
+            throw new Error('No instance named ' + name + ' found');
         }
-        throw new Error('No instance named ' + name + ' found');
+        return target._saved_instances[name];
     };
 }
 

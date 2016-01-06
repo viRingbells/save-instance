@@ -22,10 +22,10 @@ function savable (target) {
         return this;
     };
     target.getInstance = target.instance = (name = 'default') => {
-        if (target._saved_instances[name]) {
-            return target._saved_instances[name];
+        if (!target._saved_instances[name]) {
+            throw new Error('No instance named ' + name + ' found');
         }
-        throw new Error('No instance named ' + name + ' found');
+        return target._saved_instances[name];
     }
 }
 
