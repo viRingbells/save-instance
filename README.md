@@ -1,6 +1,6 @@
 # save-instance
 
-# Why save-instance
+## Why save-instance
 
 If you have a class like:
 
@@ -38,7 +38,7 @@ new Test(...args).saveInstance('A');
 Test.saveInstance('A', ...args);
 ```
 
-# How to use
+## How to use
 
 _Decoration_ is supposed as the best way to use this
 
@@ -54,9 +54,9 @@ class Test {...}
 instances(Test);
 ```
 
-# Other uses
+## Other uses
 
-## Lazy mode
+### Lazy mode
 
 Maybe we want instances initialized in a lazy mode. Just use it like this:
 
@@ -64,7 +64,7 @@ Maybe we want instances initialized in a lazy mode. Just use it like this:
 Test.saveLazyInstance('A', ...args);
 ```
 
-## Singleton
+### Singleton
 
 Use default name '' to pretend as a singleton instance
 
