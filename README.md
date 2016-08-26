@@ -46,6 +46,8 @@ Test.saveInstance('A', ...args);
 _Decoration_ is supposed as the best way to use this
 
 ```
+const instances = require('save-instance');
+
 @instances
 class Test {...}
 ```
