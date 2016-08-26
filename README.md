@@ -1,7 +1,7 @@
 # save-instance
 
-![npm version](https://img.shields.io/npm/v/save-instance.svg)
-![build status](https://travis-ci.org/viRingbells/save-instance.svg?branch=master)
+[![npm version](https://img.shields.io/npm/v/save-instance.svg)](https://www.npmjs.com/package/save-instance)
+[![build status](https://travis-ci.org/viRingbells/save-instance.svg?branch=master)](https://travis-ci.org/viRingbells/save-instance)
 
 ## Why save-instance
 
