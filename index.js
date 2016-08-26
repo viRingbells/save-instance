@@ -14,7 +14,7 @@ module.exports = (Class) => {
 
     if (Class.saveInstance || Class.prototype.saveInstance || Class.getInstance
         || Class.allInstances || Class.removeInstance || Class.removeAllInstances) {
-        const className = Class.name || Class.constructor.name || Class;
+        const className = Class.name; // || Class.constructor.name || Class;
         throw new Error('Can not decorate class ' + className + ' due to duplicated properties');
     }
     Class.saveInstance = (name, ...args) => {
@@ -24,6 +24,19 @@ module.exports = (Class) => {
     Class.prototype.saveInstance = function (name = defaultSymbol) {
         instances[name] = this;
         return this;
+    };
+
+    Class.saveLazyInstance = (name, ...args) => {
+        let instance = null;
+        instances.__defineGetter__(name, () => {
+            instance = instance || new Class(...args);
+            return instance;
+        });
+        instances.__defineSetter__(name, value => {
+            delete instances[name];
+            instances[name] = value;
+            return value;
+        });
     };
 
     Class.getInstance = (name = defaultSymbol) => {
