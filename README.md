@@ -1,5 +1,8 @@
 # save-instance
 
+![npm version](https://img.shields.io/npm/v/save-instance.svg)
+![build status](https://travis-ci.org/viRingbells/save-instance.svg?branch=master)
+
 ## Why save-instance
 
 If you have a class like:
