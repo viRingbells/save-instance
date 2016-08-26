@@ -1,42 +1,50 @@
 /**
- * Save instance - main file
+ * Make a class with method to save/get instances
  **/
 'use strict';
 
-import _debug     from 'debug';
+const $       = require('lodash');
+const debug   = require('debug')('save-instance.main');
 
-const debug = _debug("save-instance");
+debug('main:loading ...');
 
-function savable (target) {
-    if (!target || !(target instanceof Function)) {
-        throw new Error("Param for savable must be a class");
+module.exports = (Class) => {
+    const instances = {};
+    const defaultSymbol = Symbol();
+
+    if (Class.saveInstance || Class.prototype.saveInstance || Class.getInstance
+        || Class.allInstances || Class.removeInstance || Class.removeAllInstances) {
+        const className = Class.name || Class.constructor.name || Class;
+        throw new Error('Can not decorate class ' + className + ' due to duplicated properties');
     }
-    if ((target.prototype && target.prototype.saveInstance) || 
-        target.getInstance || target.instance) {
-        throw new Error("Can not make this class savable");
-    }
-    const saved_instances = {};
-    target.prototype.saveInstance = function (name = 'default', options = {}) {
-        if (saved_instances[name]) {
-            oldOptions = saved_instances[name].options;
-            if (options.readonly) {
-                throw new Error('Can not save to rewrite read only Instance ' + name + ' !');
-            }
-        }
-        saved_instances[name] = {
-            instance: this,
-            options:  options,
-        };
+    Class.saveInstance = (name, ...args) => {
+        return new Class(...args).saveInstance(name);
+    };
+
+    Class.prototype.saveInstance = function (name = defaultSymbol) {
+        instances[name] = this;
         return this;
     };
-    target.getInstance = target.instance = (name = 'default') => {
-        if (!saved_instances[name] || !saved_instances[name].instance) {
-            throw new Error('No instance named ' + name + ' found');
-        }
-        return saved_instances[name].instance;
-    }
-    return target;
-}
 
-debug("Savable: load");
-export default savable;
+    Class.getInstance = (name = defaultSymbol) => {
+        return instances[name];
+    };
+
+    Class.allInstances = () => {
+        return $.assign({}, instances);
+    };
+
+    Class.removeAllInstances = () => {
+        for (const name in instances) {
+            delete instances[name];
+        }
+        return Class;
+    };
+    Class.removeInstance = (name = defaultSymbol) => {
+        const instance = instances[name];
+        delete instances[name];
+        return instance;
+    };
+};
+
+debug('main:loaded!');
