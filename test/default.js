@@ -27,3 +27,10 @@ describe('save-instance remove singleton', () => {
         done();
     });
 });
+
+describe('save-instance create object', () => {
+    it('should create an instance by Class.create', done => {
+        Test.create().should.be.an.instanceOf(Test);
+        done();
+    });
+});

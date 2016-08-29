@@ -30,3 +30,5 @@ const testB = new Test('Test Name B').saveInstance('B');
 
 assert(Test.getInstance('B') === testB, 'getInstance() should return the exactly the same instance for name B');
 assert(Test.getInstance('A') !== testB && Test.getInstance('B') !== testA, 'getInstance() should not return a wrong instance');
+
+const testC = Test.create('Test Name C');

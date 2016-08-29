@@ -13,7 +13,8 @@ module.exports = (Class) => {
     const defaultSymbol = Symbol();
 
     if (Class.saveInstance || Class.prototype.saveInstance || Class.getInstance
-        || Class.allInstances || Class.removeInstance || Class.removeAllInstances) {
+        || Class.allInstances || Class.removeInstance || Class.removeAllInstances
+        || Class.create) {
         const className = Class.name; // || Class.constructor.name || Class;
         throw new Error('Can not decorate class ' + className + ' due to duplicated properties');
     }
@@ -57,6 +58,9 @@ module.exports = (Class) => {
         const instance = instances[name];
         delete instances[name];
         return instance;
+    };
+    Class.create = (...args) => {
+        return new Class(...args);
     };
 };
 

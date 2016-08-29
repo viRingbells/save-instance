@@ -1,6 +1,6 @@
 {
   "name": "save-instance",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Make a class with member instances to get and save",
   "scripts": {
     "test": "./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha -- --require should --recursive test",
