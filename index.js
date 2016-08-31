@@ -12,12 +12,17 @@ module.exports = (Class) => {
     const instances = {};
     const defaultSymbol = Symbol();
 
+
     if (Class.saveInstance || Class.prototype.saveInstance || Class.getInstance
         || Class.allInstances || Class.removeInstance || Class.removeAllInstances
-        || Class.create) {
+        || Class.create || Class.defaultInstanceName) {
         const className = Class.name; // || Class.constructor.name || Class;
         throw new Error('Can not decorate class ' + className + ' due to duplicated properties');
     }
+    Class.defaultInstanceName = () => {
+        return defaultSymbol;
+    };
+
     Class.saveInstance = (name, ...args) => {
         return new Class(...args).saveInstance(name);
     };
@@ -27,7 +32,7 @@ module.exports = (Class) => {
         return this;
     };
 
-    Class.saveLazyInstance = (name, ...args) => {
+    Class.saveLazyInstance = (name = defaultSymbol, ...args) => {
         let instance = null;
         instances.__defineGetter__(name, () => {
             instance = instance || new Class(...args);
@@ -40,8 +45,12 @@ module.exports = (Class) => {
         });
     };
 
-    Class.getInstance = (name = defaultSymbol) => {
-        return instances[name];
+    Class.getInstance = (name = defaultSymbol, ...args) => {
+        const instance = instances[name];
+        if (name === defaultSymbol && !instance) {
+            return Class.create(...args).saveInstance();
+        }
+        return instance;
     };
 
     Class.allInstances = () => {

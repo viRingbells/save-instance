@@ -15,6 +15,12 @@ describe('save-instance singleton', () => {
     it('should remove instances', done => {
         Test.getInstance().should.be.exactly(instance);
 
+        class Test2 {}
+        instances(Test2);
+
+        Test2.getInstance(Test2.defaultInstanceName(), 'A', 'B').should.be.an.instanceOf(Test2);
+        Test2.getInstance(Test2.defaultInstanceName(), 'A', 'B').should.be.exactly(Test2.getInstance());
+
         done();
     });
 });
