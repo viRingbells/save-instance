@@ -71,6 +71,8 @@ module.exports = (Class) => {
     Class.create = (...args) => {
         return new Class(...args);
     };
+
+    return Class;
 };
 
 debug('main:loaded!');
