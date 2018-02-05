@@ -4,6 +4,7 @@
 'use strict';
 
 const $       = require('lodash');
+const assert  = require('assert');
 const debug   = require('debug')('save-instance.main');
 
 debug('main:loading ...');
@@ -27,6 +28,7 @@ module.exports = (Class, defaultName = Symbol()) => {
     };
 
     Class.prototype.saveInstance = function (name = defaultName) {
+        assert(!instances.hasOwnProperty(name), `Instance [${'string' === typeof name ? name : 'default'}] already exists`);
         instances[name] = this;
         return this;
     };
@@ -37,11 +39,13 @@ module.exports = (Class, defaultName = Symbol()) => {
             instance = instance || new Class(...args);
             return instance;
         });
+        /*
         instances.__defineSetter__(name, value => {
             delete instances[name];
             instances[name] = value;
             return value;
         });
+        */
     };
 
     Class.getInstance = (name = defaultName, ...args) => {

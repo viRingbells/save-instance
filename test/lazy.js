@@ -27,11 +27,11 @@ describe('save-instance lazy mode', () => {
         Test.getInstance('B');
         initialized.should.be.exactly(2);
 
-        Test.saveInstance("B");
-        initialized.should.be.exactly(3);
+        Test.saveLazyInstance("B");
+        initialized.should.be.exactly(2);
 
         Test.saveLazyInstance(Test.defaultInstanceName());
-        initialized.should.be.exactly(3);
+        initialized.should.be.exactly(2);
 
         Object.keys(Test.allInstances()).length.should.be.exactly(2);
 
