@@ -13,19 +13,23 @@ describe('save-instance remove', () => {
     it('should remove instances', done => {
         Test.saveInstance('A');
         Test.saveInstance('B');
+        Test.saveInstance('C');
 
         let instances = null;
         instances = Test.allInstances();
-        Object.keys(instances).length.should.be.exactly(2);
+        Object.keys(instances).length.should.be.exactly(3);
 
         Test.removeInstance('A');
         instances = Test.allInstances();
-        Object.keys(instances).length.should.be.exactly(1);
+        Object.keys(instances).length.should.be.exactly(2);
         (instances.B).should.be.an.instanceOf(Test);
+        (instances.C).should.be.an.instanceOf(Test);
 
-        Test.removeInstance('B');
+        Test.removeInstance(instances.B);
         instances = Test.allInstances();
-        Object.keys(instances).length.should.be.exactly(0);
+        Object.keys(instances).length.should.be.exactly(1);
+
+        (instances.C).should.be.an.instanceOf(Test);
 
         done();
     });
@@ -38,7 +42,7 @@ describe('save-instance remove all', () => {
 
         let instances = null;
         instances = Test.allInstances();
-        Object.keys(instances).length.should.be.exactly(2);
+        Object.keys(instances).length.should.be.exactly(3);
 
         Test.removeAllInstances();
         instances = Test.allInstances();

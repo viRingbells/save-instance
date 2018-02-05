@@ -63,6 +63,15 @@ module.exports = (Class, defaultName = Symbol()) => {
         return Class;
     };
     Class.removeInstance = (name = defaultName) => {
+        if (name instanceof Object) {
+            const instance = name;
+            for (const key in instances) {
+                if (instances[key] === instance) {
+                    delete instances[key];
+                }
+            }
+            return name;
+        }
         const instance = instances[name];
         delete instances[name];
         return instance;
