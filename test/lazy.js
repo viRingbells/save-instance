@@ -4,17 +4,17 @@
 'use strict';
 
 const debug     = require('debug')('save-instance.test');
-const instances = require('..');
+const savable   = require('save-instance');
 
 describe('save-instance lazy mode', () => {
-    it('should be intialized in the first use', done => {
+    it('should be intialized in the first use', async () => {
         let initialized = 0;
         class Test {
             constructor () {
                 initialized++;
             }
         }
-        instances(Test);
+        savable()(Test);
 
         Test.saveLazyInstance("A");
         Test.saveLazyInstance("B");
@@ -34,8 +34,6 @@ describe('save-instance lazy mode', () => {
         initialized.should.be.exactly(2);
 
         Object.keys(Test.allInstances()).length.should.be.exactly(2);
-
-        done();
     });
 });
 

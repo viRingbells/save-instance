@@ -4,13 +4,13 @@
 'use strict';
 
 const debug     = require('debug')('save-instance.test');
-const instances = require('..');
+const savable   = require('save-instance');
 
 class Test {}
-instances(Test);
+savable()(Test);
 
 describe('save-instance remove', () => {
-    it('should remove instances', done => {
+    it('should remove instances', async () => {
         Test.saveInstance('A');
         Test.saveInstance('B');
         Test.saveInstance('C');
@@ -30,13 +30,11 @@ describe('save-instance remove', () => {
         Object.keys(instances).length.should.be.exactly(1);
 
         (instances.C).should.be.an.instanceOf(Test);
-
-        done();
     });
 });
 
 describe('save-instance remove all', () => {
-    it('should remove all instances', done => {
+    it('should remove all instances', async () => {
         const testA = Test.saveInstance('A');
         const testB = Test.saveInstance('B');
 
@@ -47,7 +45,5 @@ describe('save-instance remove all', () => {
         Test.removeAllInstances();
         instances = Test.allInstances();
         Object.keys(instances).length.should.be.exactly(0);
-
-        done();
     });
 });

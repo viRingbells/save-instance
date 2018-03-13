@@ -46,17 +46,17 @@ Test.saveInstance('A', ...args);
 _Decoration_ is supposed as the best way to use this
 
 ```
-const instances = require('save-instance');
+const savable = require('save-instance');
 
-@instances
+@savable()
 class Test {...}
 ```
 
-Yet decorator is not implemented till current version (v6.4), use it like
+Yet decorator is not implemented till current version (v7.6), use it like
 
 ```
 class Test {...}
-instances(Test);
+savable()(Test);
 ```
 
 ## Other uses
@@ -76,4 +76,17 @@ Use default name '' to pretend as a singleton instance
 ```
 new Test(...args).saveInstance();
 const test =  Test.getInstance();
+```
+
+### Preprocess arguments
+
+If you want to preprocess arguments, use options creating decorators.
+
+```
+@savable({
+    preprocessArguments(name, ...args) {
+        return ['arg1', 'arg2', 'arg3'];
+    }
+}
+class Test {}
 ```

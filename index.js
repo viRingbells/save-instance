@@ -3,88 +3,105 @@
  **/
 'use strict';
 
-const $       = require('lodash');
+const _       = require('lodash');
 const assert  = require('assert');
-const debug   = require('debug')('save-instance.main');
-
-debug('main:loading ...');
-
-module.exports = (Class, defaultName = Symbol()) => {
-    const instances = {};
+const debug   = require('debug')('save-instance');
 
 
-    if (Class.saveInstance || Class.prototype.saveInstance || Class.getInstance
-        || Class.allInstances || Class.removeInstance || Class.removeAllInstances
-        || Class.create || Class.defaultInstanceName) {
-        const className = Class.name; // || Class.constructor.name || Class;
-        throw new Error('Can not decorate class ' + className + ' due to duplicated properties');
-    }
-    Class.defaultInstanceName = () => {
-        return defaultName;
-    };
-
-    Class.saveInstance = (name, ...args) => {
-        return new Class(...args).saveInstance(name);
-    };
-
-    Class.prototype.saveInstance = function (name = defaultName) {
-        assert(!instances.hasOwnProperty(name), `Instance [${'string' === typeof name ? name : 'default'}] already exists`);
-        instances[name] = this;
-        return this;
-    };
-
-    Class.saveLazyInstance = (name = defaultName, ...args) => {
-        let instance = null;
-        instances.__defineGetter__(name, () => {
-            instance = instance || new Class(...args);
-            return instance;
-        });
-        /*
-        instances.__defineSetter__(name, value => {
-            delete instances[name];
-            instances[name] = value;
-            return value;
-        });
-        */
-    };
-
-    Class.getInstance = (name = defaultName, ...args) => {
-        const instance = instances[name];
-        if (name === defaultName && !instance) {
-            return Class.create(...args).saveInstance();
-        }
-        return instance;
-    };
-
-    Class.allInstances = () => {
-        return $.assign({}, instances);
-    };
-
-    Class.removeAllInstances = () => {
-        for (const name in instances) {
-            delete instances[name];
-        }
-        return Class;
-    };
-    Class.removeInstance = (name = defaultName) => {
-        if (name instanceof Object) {
-            const instance = name;
-            for (const key in instances) {
-                if (instances[key] === instance) {
-                    delete instances[key];
-                }
-            }
-            return name;
-        }
-        const instance = instances[name];
-        delete instances[name];
-        return instance;
-    };
-    Class.create = (...args) => {
-        return new Class(...args);
-    };
-
-    return Class;
+const DEFAULT_OPTION = {
+    preprocessArguments(name, ...args) { return args; },
 };
 
-debug('main:loaded!');
+
+function savable(options = {}) {
+    debug('create savable decorator');
+    assert(options instanceof Object, 'Invalid type of options, should be an object');
+    options = _.chain(options)
+        .cloneDeep()
+        .defaultsDeep(DEFAULT_OPTION)
+        .pick(Object.keys(DEFAULT_OPTION))
+        .value();
+
+    function decorator(Class, defaultName = Symbol()) {
+        debug('decorating');
+        const instances = {};
+
+        if (Class.saveInstance || Class.prototype.saveInstance || Class.getInstance
+            || Class.allInstances || Class.removeInstance || Class.removeAllInstances
+            || Class.create || Class.defaultInstanceName) {
+            const className = Class.name; // || Class.constructor.name || Class;
+            throw new Error('Can not decorate class ' + className + ' due to duplicated properties');
+        }
+        Class.defaultInstanceName = () => {
+            return defaultName;
+        };
+
+        Class.saveInstance = (name, ...args) => {
+            return new Class(...options.preprocessArguments(name, ...args)).saveInstance(name);
+        };
+
+        Class.prototype.saveInstance = function (name = defaultName) {
+            assert(!instances.hasOwnProperty(name), `Instance [${'string' === typeof name ? name : 'default'}] already exists`);
+            instances[name] = this;
+            return this;
+        };
+
+        Class.saveLazyInstance = (name = defaultName, ...args) => {
+            let instance = null;
+            instances.__defineGetter__(name, () => {
+                instance = instance || new Class(...options.preprocessArguments(name, ...args));
+                return instance;
+            });
+            /*
+            instances.__defineSetter__(name, value => {
+                delete instances[name];
+                instances[name] = value;
+                return value;
+            });
+            */
+        };
+
+        Class.getInstance = (name = defaultName, ...args) => {
+            const instance = instances[name];
+            if (name === defaultName && !instance) {
+                return Class.create(...args).saveInstance();
+            }
+            return instance;
+        };
+
+        Class.allInstances = () => {
+            return _.assign({}, instances);
+        };
+
+        Class.removeAllInstances = () => {
+            for (const name in instances) {
+                delete instances[name];
+            }
+            return Class;
+        };
+        Class.removeInstance = (name = defaultName) => {
+            if (name instanceof Object) {
+                const instance = name;
+                for (const key in instances) {
+                    if (instances[key] === instance) {
+                        delete instances[key];
+                    }
+                }
+                return name;
+            }
+            const instance = instances[name];
+            delete instances[name];
+            return instance;
+        };
+        Class.create = (...args) => {
+            return new Class(...args);
+        };
+
+        return Class;
+    }
+
+    return decorator;
+}
+
+
+module.exports = savable;

@@ -5,22 +5,20 @@
 
 const debug     = require('debug')('save-instance.example');
 const assert    = require('assert');
-const instances = require('..');
-
-debug('main:loading ...');
+const savable   = require('save-instance');
 
 /**
  * save-instance is supposed to be used as a decorator
  * yet it has not been implemented till this node version
  * so use it as a common function directly
  **/
-// @instances
+// @instances()
 class Test {
     constructor (name) {
         this.name = name;
     }
 }
-instances(Test);
+savable()(Test);
 
 const testA = new Test('Test Name A').saveInstance('A');
 

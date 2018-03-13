@@ -4,16 +4,16 @@
 'use strict';
 
 const debug     = require('debug')('save-instance.test');
-const instances = require('..');
+const savable   = require('save-instance');
 
 class Test {}
-instances(Test);
+savable()(Test);
 
 describe('save-instance', () => {
     const originA = new Test();
     const originB = new Test();
 
-    it('should save the instance', done => {
+    it('should save the instance', async () => {
         originA.saveInstance('A');
         originB.saveInstance('B');
 
@@ -21,15 +21,11 @@ describe('save-instance', () => {
         Object.keys(instances).length.should.be.exactly(2);
         instances.A.should.be.exactly(originA);
         instances.B.should.be.exactly(originB);
-
-        done();
     });
 
-    it('should return the right instance', done => {
+    it('should return the right instance', async () => {
         Test.getInstance('A').should.be.exactly(originA);
         Test.getInstance('B').should.be.exactly(originB);
-
-        done();
     });
 });
 
