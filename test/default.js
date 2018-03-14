@@ -20,6 +20,15 @@ describe('save-instance singleton', () => {
 
         Test2.getInstance(Test2.defaultInstanceName(), 'A', 'B').should.be.an.instanceOf(Test2);
         Test2.getInstance(Test2.defaultInstanceName(), 'A', 'B').should.be.exactly(Test2.getInstance());
+
+        const Test3 = savable()(
+        class Test3 {
+            constructor(name) {
+                this.name = name;
+            }
+        });
+        Test3.getInstance('foo', 'bar').should.be.an.instanceOf(Test3).with.property('name', 'bar');
+        Test3.getInstance('foo', 'baz').should.be.an.instanceOf(Test3).with.property('name', 'bar');
     });
 });
 

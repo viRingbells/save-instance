@@ -97,7 +97,7 @@ function savable(options = {}) {
         Class.getInstance = (name = defaultName, ...args) => {
             name = mapName(options.map, name);
             const instance = instances[name];
-            if (name !== defaultName || args.length === 0 || instance) {
+            if (instance) {
                 return instance;
             }
             return Class.saveInstance(name, ...args);
