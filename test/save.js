@@ -7,7 +7,7 @@ const debug     = require('debug')('save-instance.test');
 const savable   = require('save-instance');
 
 class Test {}
-savable()(Test);
+Test = savable()(Test);
 
 describe('save-instance', () => {
     const originA = new Test();

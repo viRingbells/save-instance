@@ -6,8 +6,7 @@
 const debug     = require('debug')('save-instance.test');
 const savable   = require('save-instance');
 
-class Test {}
-savable()(Test);
+const Test = savable()(class {});
 
 const instance = new Test().saveInstance();
 
@@ -16,7 +15,7 @@ describe('save-instance singleton', () => {
         Test.getInstance().should.be.exactly(instance);
 
         class Test2 {}
-        savable()(Test2);
+        Test2 = savable()(Test2);
 
         Test2.getInstance(Test2.defaultInstanceName(), 'A', 'B').should.be.an.instanceOf(Test2);
         Test2.getInstance(Test2.defaultInstanceName(), 'A', 'B').should.be.exactly(Test2.getInstance());

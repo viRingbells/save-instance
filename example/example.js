@@ -12,13 +12,12 @@ const savable   = require('save-instance');
  * yet it has not been implemented till this node version
  * so use it as a common function directly
  **/
-// @instances()
-class Test {
+const Test = savable()
+(class {
     constructor (name) {
         this.name = name;
     }
-}
-savable()(Test);
+});
 
 const testA = new Test('Test Name A').saveInstance('A');
 

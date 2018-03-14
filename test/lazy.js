@@ -14,7 +14,7 @@ describe('save-instance lazy mode', () => {
                 initialized++;
             }
         }
-        savable()(Test);
+        Test = savable()(Test);
 
         Test.saveLazyInstance("A");
         Test.saveLazyInstance("B");

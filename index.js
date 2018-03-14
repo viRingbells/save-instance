@@ -24,12 +24,15 @@ function mapName(map, name) {
     if (map instanceof Object && map.hasOwnProperty(name)) {
         return map[name];
     }
+    if (map instanceof Function) {
+        return map(name);
+    }
     return name;
 }
 
 
 function savable(options = {}) {
-    debug('create savable decorator');
+    debug('create savable decorate');
     assert(options instanceof Object, 'Invalid type of options, should be an object');
     options = _.chain(options)
         .cloneDeep()
@@ -37,22 +40,22 @@ function savable(options = {}) {
         .pick(Object.keys(DEFAULT_OPTION))
         .value();
 
-    function createInstance(Class, name, ...args) {
+    function createInstance(Savable, name, ...args) {
         let preparedArguments = options.preprocessArguments(name, ...args);
         if (undefined === preparedArguments) {
             preparedArguments = args;
         }
-        let instance = new Class(...preparedArguments);
+        let instance = new Savable(...preparedArguments);
         const argsForPreprocessInstance = options.preprocessInstanceWithOriginalArgs
             ? args : preparedArguments;
         instance = options.preprocessInstance(instance, name, ...argsForPreprocessInstance) || instance;
-        assert(instance instanceof Class, `options.preprocessInstance must return a instance of ${Class}`);
+        assert(instance instanceof Savable, `options.preprocessInstance must return a instance of ${Savable}`);
         return instance;
     }
 
     const defaultName = options.defaultName || Symbol();
 
-    function decorator(Class) {
+    function decorate(Class) {
         debug('decorating');
         const instances = {};
 
@@ -62,80 +65,81 @@ function savable(options = {}) {
             const className = Class.name; // || Class.constructor.name || Class;
             throw new Error('Can not decorate class ' + className + ' due to duplicated properties');
         }
-        Class.defaultInstanceName = () => {
-            return defaultName;
-        };
 
-        Class.saveInstance = (name = defaultName, ...args) => {
-            name = mapName(options.map, name);
-            return createInstance(Class, name, ...args).saveInstance(name);
-        };
-
-        Class.prototype.saveInstance = function (name = defaultName) {
-            name = mapName(options.map, name);
-            assert(!instances.hasOwnProperty(name), `Instance [${'string' === typeof name ? name : '#default#'}] already exists`);
-            instances[name] = this;
-            return this;
-        };
-
-        Class.saveLazyInstance = (name = defaultName, ...args) => {
-            name = mapName(options.map, name);
-            let instance = null;
-            instances.__defineGetter__(name, () => {
-                instance = instance || createInstance(Class, name, ...args);
-                return instance;
-            });
-            /*
-            instances.__defineSetter__(name, value => {
-                delete instances[name];
-                instances[name] = value;
-                return value;
-            });
-            */
-        };
-
-        Class.getInstance = (name = defaultName, ...args) => {
-            name = mapName(options.map, name);
-            const instance = instances[name];
-            if (instance) {
-                return instance;
+        class Savable extends Class {
+            static defaultInstanceName() {
+                return defaultName;
             }
-            return Class.saveInstance(name, ...args);
-        };
 
-        Class.allInstances = () => {
-            return _.assign({}, instances);
-        };
-
-        Class.removeAllInstances = () => {
-            for (const name in instances) {
-                delete instances[name];
+            static saveInstance(name = defaultName, ...args) {
+                const targetName = mapName(options.map, name);
+                return createInstance(Savable, targetName, ...args).saveInstance(name);
             }
-            return Class;
-        };
-        Class.removeInstance = (name = defaultName) => {
-            if (name instanceof Object) {
-                const instance = name;
-                for (const key in instances) {
-                    if (instances[key] === instance) {
-                        delete instances[key];
+
+            saveInstance(name = defaultName) {
+                const targetName = mapName(options.map, name);
+                assert(!instances.hasOwnProperty(targetName), `Instance [${'string' === typeof name ? name : '#default#'}] already exists`);
+                instances[targetName] = this;
+                return this;
+            }
+
+            static saveLazyInstance(name = defaultName, ...args) {
+                const targetName = mapName(options.map, name);
+                let instance = null;
+                instances.__defineGetter__(targetName, () => {
+                    if (instance instanceof Savable) {
+                        return instance;
                     }
-                }
-                return name;
+                    instance = Savable.create(name, ...args);
+                    return instance;
+                });
             }
-            name = mapName(options.map, name);
-            const instance = instances[name];
-            delete instances[name];
-            return instance;
-        };
-        Class.create = (...args) => {
-            return new Class(...args);
-        };
 
-        return Class;
+            static getInstance(name = defaultName, ...args) {
+                const targetName = mapName(options.map, name);
+                const instance = instances[targetName];
+                if (instance) {
+                    return instance;
+                }
+                return Savable.saveInstance(name, ...args);
+            }
+
+            static allInstances() {
+                return _.assign({}, instances);
+            }
+
+            static removeAllInstances() {
+                for (const name in instances) {
+                    delete instances[name];
+                }
+                return Savable;
+            }
+
+            static removeInstance(name = defaultName) {
+                if (name instanceof Object) {
+                    const instance = name;
+                    for (const key in instances) {
+                        if (instances[key] === instance) {
+                            delete instances[key];
+                        }
+                    }
+                    return name;
+                }
+                name = mapName(options.map, name);
+                const instance = instances[name];
+                delete instances[name];
+                return instance;
+            }
+
+            static create(...args) {
+                return new Savable(...args);
+            }
+        }
+
+        return Savable;
     }
 
-    return decorator;
+    return decorate;
 }
 
 
