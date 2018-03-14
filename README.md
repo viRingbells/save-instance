@@ -1,7 +1,8 @@
 # save-instance
 
-[![npm version](https://img.shields.io/npm/v/save-instance.svg)](https://www.npmjs.com/package/save-instance)
-[![build status](https://travis-ci.org/viRingbells/save-instance.svg?branch=master)](https://travis-ci.org/viRingbells/save-instance)
+[![NPM version][npm-image]][npm-url]
+[![build status][travis-image]][travis-url]
+[![Test coverage][coveralls-image]][coveralls-url]
 
 ## Why save-instance
 
@@ -115,3 +116,11 @@ If you want to set a default name, or want to map some names into one, use `opti
 })
 class Test {}
 ```
+
+
+[npm-image]: https://img.shields.io/npm/v/save-instance.svg?style=flat-square
+[npm-url]: https://www.npmjs.com/package/save-instance
+[travis-image]: https://img.shields.io/travis/viRingbells/save-instance/master.svg?style=flat-square
+[travis-url]: https://travis-ci.org/viRingbells/save-instance
+[coveralls-image]: https://img.shields.io/codecov/c/github/viRingbells/save-instance.svg?style=flat-square
+[coveralls-url]: https://codecov.io/github/viRingbells/save-instance?branch=master
