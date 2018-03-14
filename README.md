@@ -78,15 +78,40 @@ new Test(...args).saveInstance();
 const test =  Test.getInstance();
 ```
 
-### Preprocess arguments
+### Options
 
-If you want to preprocess arguments, use options creating decorators.
+If you want to preprocess arguments, use `options.preprocessArguments(name, ...args)`
 
 ```
 @savable({
     preprocessArguments(name, ...args) {
         return ['arg1', 'arg2', 'arg3'];
     }
-}
+})
+class Test {}
+```
+
+If you want to preprocess instance, use `options.preprocessInstance(instance, name, ...args)`
+
+```
+@savable({
+    preprocessInstance(instance, name) {
+        instance.name = name;
+        return instance;
+    }
+})
+class Test {}
+```
+
+If you want to set a default name, or want to map some names into one, use `options.defaultName` and `options.map`
+
+```
+@savable({
+    defaultName: 'foo',
+    map: {
+        'bar': 'foo',
+        'baz': 'foo',
+    },
+})
 class Test {}
 ```

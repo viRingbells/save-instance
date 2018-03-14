@@ -9,8 +9,23 @@ const debug   = require('debug')('save-instance');
 
 
 const DEFAULT_OPTION = {
-    preprocessArguments(name, ...args) { return args; },
+    defaultName: null,
+    map: null,
+    preprocessArguments() {},
+    preprocessInstanceWithOriginalArgs: true,
+    preprocessInstance() {},
 };
+
+
+function mapName(map, name) {
+    if (map instanceof Map && map.has(name)) {
+        return map.get(name);
+    }
+    if (map instanceof Object && map.hasOwnProperty(name)) {
+        return map[name];
+    }
+    return name;
+}
 
 
 function savable(options = {}) {
@@ -22,7 +37,22 @@ function savable(options = {}) {
         .pick(Object.keys(DEFAULT_OPTION))
         .value();
 
-    function decorator(Class, defaultName = Symbol()) {
+    function createInstance(Class, name, ...args) {
+        let preparedArguments = options.preprocessArguments(name, ...args);
+        if (undefined === preparedArguments) {
+            preparedArguments = args;
+        }
+        let instance = new Class(...preparedArguments);
+        const argsForPreprocessInstance = options.preprocessInstanceWithOriginalArgs
+            ? args : preparedArguments;
+        instance = options.preprocessInstance(instance, name, ...argsForPreprocessInstance) || instance;
+        assert(instance instanceof Class, `options.preprocessInstance must return a instance of ${Class}`);
+        return instance;
+    }
+
+    const defaultName = options.defaultName || Symbol();
+
+    function decorator(Class) {
         debug('decorating');
         const instances = {};
 
@@ -36,20 +66,23 @@ function savable(options = {}) {
             return defaultName;
         };
 
-        Class.saveInstance = (name, ...args) => {
-            return new Class(...options.preprocessArguments(name, ...args)).saveInstance(name);
+        Class.saveInstance = (name = defaultName, ...args) => {
+            name = mapName(options.map, name);
+            return createInstance(Class, name, ...args).saveInstance(name);
         };
 
         Class.prototype.saveInstance = function (name = defaultName) {
-            assert(!instances.hasOwnProperty(name), `Instance [${'string' === typeof name ? name : 'default'}] already exists`);
+            name = mapName(options.map, name);
+            assert(!instances.hasOwnProperty(name), `Instance [${'string' === typeof name ? name : '#default#'}] already exists`);
             instances[name] = this;
             return this;
         };
 
         Class.saveLazyInstance = (name = defaultName, ...args) => {
+            name = mapName(options.map, name);
             let instance = null;
             instances.__defineGetter__(name, () => {
-                instance = instance || new Class(...options.preprocessArguments(name, ...args));
+                instance = instance || createInstance(Class, name, ...args);
                 return instance;
             });
             /*
@@ -62,11 +95,12 @@ function savable(options = {}) {
         };
 
         Class.getInstance = (name = defaultName, ...args) => {
+            name = mapName(options.map, name);
             const instance = instances[name];
-            if (name === defaultName && !instance) {
-                return Class.create(...args).saveInstance();
+            if (name !== defaultName || instance) {
+                return instance;
             }
-            return instance;
+            return Class.saveInstance(name, ...args);
         };
 
         Class.allInstances = () => {
@@ -89,6 +123,7 @@ function savable(options = {}) {
                 }
                 return name;
             }
+            name = mapName(options.map, name);
             const instance = instances[name];
             delete instances[name];
             return instance;

@@ -18,6 +18,7 @@ describe('save-instance lazy mode', () => {
 
         Test.saveLazyInstance("A");
         Test.saveLazyInstance("B");
+        Test.saveLazyInstance();
 
         initialized.should.be.exactly(0);
         Test.getInstance('A');
