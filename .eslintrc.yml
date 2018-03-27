@@ -29,6 +29,8 @@ rules:
         - lodash 
         - preprocess
         - typeof
-        - Getter
+        - getter
+        - func
+        - arg
 plugins:
   - spellcheck

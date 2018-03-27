@@ -17,6 +17,9 @@ const DEFAULT_OPTION = {
 };
 
 
+let lastMapFunc = null;
+let lastMapFuncArgName = null;
+let lastMapResult = null;
 function mapName(map, name) {
     if (map instanceof Map && map.has(name)) {
         return map.get(name);
@@ -25,7 +28,13 @@ function mapName(map, name) {
         return map[name];
     }
     if (map instanceof Function) {
-        return map(name);
+        if (lastMapFunc === map && lastMapFuncArgName === name) {
+            return lastMapResult;
+        }
+        lastMapFunc = map;
+        lastMapFuncArgName = name;
+        lastMapResult = map(name);
+        return lastMapResult;
     }
     return name;
 }
