@@ -117,6 +117,8 @@ If you want to set a default name, or want to map some names into one, use `opti
 class Test {}
 ```
 
+Notice that the default name is `undefined` and maps `null` to `undefined`.
+
 
 [npm-image]: https://img.shields.io/npm/v/save-instance.svg?style=flat-square
 [npm-url]: https://www.npmjs.com/package/save-instance

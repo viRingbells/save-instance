@@ -9,8 +9,10 @@ const debug   = require('debug')('save-instance');
 
 
 const DEFAULT_OPTION = {
-    defaultName: null,
-    map: null,
+    defaultName: undefined,
+    map: {
+        null: undefined,
+    },
     preprocessArguments() {},
     preprocessInstanceWithOriginalArgs: true,
     preprocessInstance() {},
