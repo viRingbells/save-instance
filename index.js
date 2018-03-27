@@ -23,12 +23,6 @@ let lastMapFunc = null;
 let lastMapFuncArgName = null;
 let lastMapResult = null;
 function mapName(map, name) {
-    if (map instanceof Map && map.has(name)) {
-        return map.get(name);
-    }
-    if (map instanceof Object && map.hasOwnProperty(name)) {
-        return map[name];
-    }
     if (map instanceof Function) {
         if (lastMapFunc === map && lastMapFuncArgName === name) {
             return lastMapResult;
@@ -37,6 +31,12 @@ function mapName(map, name) {
         lastMapFuncArgName = name;
         lastMapResult = map(name);
         return lastMapResult;
+    }
+    if (map instanceof Map && map.has(name)) {
+        return map.get(name);
+    }
+    if (map instanceof Object && map.hasOwnProperty(name)) {
+        return map[name];
     }
     return name;
 }
@@ -112,6 +112,7 @@ function savable(options = {}) {
             static getInstance(name = defaultName, ...args) {
                 debug(`get instance ${'string' === typeof name ? name : '[no-string]'}`);
                 const targetName = mapName(options.map, name);
+                debug(`mapped name is ${targetName}`);
                 const instance = instances[targetName];
                 if (instance) {
                     return instance;
