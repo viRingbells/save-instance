@@ -1,6 +1,6 @@
 {
   "name": "save-instance",
-  "version": "1.4.4",
+  "version": "1.4.5",
   "description": "Make a class with member instances to get and save",
   "scripts": {
     "lint": "./node_modules/.bin/eslint index.js",

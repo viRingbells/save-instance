@@ -50,6 +50,7 @@ function savable(options = {}) {
         .value();
 
     function createInstance(Savable, name, ...args) {
+        debug(`create instance ${'string' === typeof name ? name : '[no-string]'}`);
         let preparedArguments = options.preprocessArguments(name, ...args);
         if (undefined === preparedArguments) {
             preparedArguments = args;
@@ -62,7 +63,7 @@ function savable(options = {}) {
         return instance;
     }
 
-    const defaultName = options.defaultName || Symbol();
+    const defaultName = options.defaultName;
 
     function decorate(Class) {
         debug('decorating');
@@ -93,18 +94,21 @@ function savable(options = {}) {
             }
 
             static saveLazyInstance(name = defaultName, ...args) {
+                debug(`save lazy instance ${'string' === typeof name ? name : '[no-string]'}`);
                 const targetName = mapName(options.map, name);
                 let instance = null;
                 instances.__defineGetter__(targetName, () => {
                     if (instance instanceof Savable) {
                         return instance;
                     }
-                    instance = Savable.create(name, ...args);
+                    debug(`create lazy instance ${'string' === typeof name ? name : '[no-string]'}`);
+                    instance = createInstance(Savable, targetName, ...args);
                     return instance;
                 });
             }
 
             static getInstance(name = defaultName, ...args) {
+                debug(`get instance ${'string' === typeof name ? name : '[no-string]'}`);
                 const targetName = mapName(options.map, name);
                 const instance = instances[targetName];
                 if (instance) {

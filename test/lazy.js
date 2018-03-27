@@ -34,7 +34,8 @@ describe('save-instance lazy mode', () => {
         Test.saveLazyInstance(Test.defaultInstanceName());
         initialized.should.be.exactly(2);
 
-        Object.keys(Test.allInstances()).length.should.be.exactly(2);
+        // getting all instances makes all lazy instances created, there are A, B and defualt
+        Object.keys(Test.allInstances()).length.should.be.exactly(3);
     });
 });
 
