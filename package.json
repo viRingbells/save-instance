@@ -20,9 +20,9 @@
   "author": "Sun Haohao",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/viRingbells/esay-babel/issues"
+    "url": "https://github.com/viRingbells/save-instance/issues"
   },
-  "homepage": "https://github.com/viRingbells/esay-babel#readme",
+  "homepage": "https://github.com/viRingbells/save-instance#readme",
   "engines": {
     "node": ">= 7.6"
   },
